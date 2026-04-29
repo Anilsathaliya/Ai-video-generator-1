@@ -1,3 +1,15 @@
+const express = require("express");
+const cors = require("cors");
+const axios = require("axios");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("AI Backend Running 🚀");
+});
+
 app.post("/generate", async (req, res) => {
   try {
     const prompt = req.body.prompt;
@@ -13,7 +25,7 @@ app.post("/generate", async (req, res) => {
       }
     );
 
-    const base64 = Buffer.from(response.data, "binary").toString("base64");
+    const base64 = Buffer.from(response.data).toString("base64");
 
     res.json({
       image: `data:image/png;base64,${base64}`
@@ -27,4 +39,10 @@ app.post("/generate", async (req, res) => {
       details: error.message
     });
   }
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
 });
