@@ -3,7 +3,7 @@ app.post("/generate", async (req, res) => {
     const prompt = req.body.prompt;
 
     const response = await axios.post(
-      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+  "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
       { inputs: prompt },
       {
         headers: {
