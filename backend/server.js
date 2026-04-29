@@ -1,38 +1,37 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-
-const app = express();
-
-app.use(cors());
-app.use(bodyParser.json({ limit: "10mb" }));
-
-app.post("/generate", async (req, res) => {
+app.post("/generate-video", async (req, res) => {
   try {
-    const { prompt, width, height } = req.body;
+    const { prompt } = req.body;
 
     if (!prompt) {
       return res.status(400).json({ error: "Prompt missing" });
     }
 
-    console.log("Prompt:", prompt);
-    console.log("Size:", width, height);
+    // 🔥 VIDEO GENERATION (example AI API pattern)
+    const response = await axios.post(
+      "https://queue.fal.run/fal-ai/minimax/video", 
+      {
+        prompt: prompt,
+        duration: 5
+      },
+      {
+        headers: {
+          Authorization: `Key ${process.env.FAL_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
-    // 🔥 TEMP DEMO IMAGE (replace with real AI API)
-    const imageUrl = `https://via.placeholder.com/${width || 512}x${height || 512}.png?text=${encodeURIComponent(prompt)}`;
+    const videoUrl = response.data.video?.url;
 
     res.json({
-      image: imageUrl
+      video: videoUrl
     });
 
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Generation failed" });
+    console.log(err.response?.data || err.message);
+    res.status(500).json({
+      error: "Video generation failed",
+      details: err.message
+    });
   }
-});
-
-const PORT = process.env.PORT || 10000;
-
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
 });
