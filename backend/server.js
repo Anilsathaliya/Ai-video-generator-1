@@ -1,44 +1,37 @@
 const express = require("express");
 const cors = require("cors");
-const axios = require("axios");
+const bodyParser = require("body-parser");
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("AI Backend Running 🚀");
-});
+app.use(cors());
+app.use(bodyParser.json({ limit: "10mb" }));
 
 app.post("/generate", async (req, res) => {
   try {
-    const prompt = req.body.prompt;
+    const { prompt, width, height } = req.body;
 
-    const url =
-      "https://image.pollinations.ai/prompt/" +
-      encodeURIComponent(prompt);
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt missing" });
+    }
 
-    const response = await axios.get(url, {
-      responseType: "arraybuffer"
-    });
+    console.log("Prompt:", prompt);
+    console.log("Size:", width, height);
 
-    const base64 = Buffer.from(response.data).toString("base64");
+    // 🔥 TEMP DEMO IMAGE (replace with real AI API)
+    const imageUrl = `https://via.placeholder.com/${width || 512}x${height || 512}.png?text=${encodeURIComponent(prompt)}`;
 
     res.json({
-      image: `data:image/png;base64,${base64}`
+      image: imageUrl
     });
 
-  } catch (error) {
-    console.log("ERROR:", error.message);
-
-    res.status(500).json({
-      error: "Generation failed",
-      details: error.message
-    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Generation failed" });
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
