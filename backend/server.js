@@ -3,7 +3,7 @@ app.post("/generate", async (req, res) => {
     const prompt = req.body.prompt;
 
     const response = await axios.post(
-      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2",
+      "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
       { inputs: prompt },
       {
         headers: {
@@ -12,10 +12,6 @@ app.post("/generate", async (req, res) => {
         responseType: "arraybuffer"
       }
     );
-
-    if (!response.data) {
-      return res.status(500).json({ error: "No image returned" });
-    }
 
     const base64 = Buffer.from(response.data).toString("base64");
 
