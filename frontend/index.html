@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Generator</title>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding: 40px;
+    }
+
+    input {
+      width: 60%;
+      padding: 10px;
+      margin: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    img {
+      margin-top: 20px;
+      width: 300px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🔥 AI Image Generator</h1>
+
+<input id="prompt" placeholder="Enter prompt..." />
+<br>
+<button onclick="generate()">Generate</button>
+
+<br>
+<img id="result" />
+
+<script>
+async function generate() {
+  const prompt = document.getElementById("prompt").value;
+
+  const res = await fetch("https://YOUR-RENDER-URL.onrender.com/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ prompt })
+  });
+
+  const data = await res.json();
+  document.getElementById("result").src = data.image;
+}
+</script>
+
+</body>
+</html>
