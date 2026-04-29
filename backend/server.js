@@ -22,7 +22,7 @@ app.post("/generate", async (req, res) => {
       { inputs: prompt },
       {
         headers: {
-          Authorization: `Bearer ${process.env.HF_TOKEN}`
+          Authorization: `Bearer ${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}`
         },
         responseType: "arraybuffer"
       }
