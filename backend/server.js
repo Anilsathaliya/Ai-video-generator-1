@@ -1,15 +1,3 @@
-const express = require("express");
-const cors = require("cors");
-const axios = require("axios");
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.send("AI Backend Running 🚀");
-});
-
 app.post("/generate", async (req, res) => {
   try {
     const prompt = req.body.prompt;
@@ -19,12 +7,28 @@ app.post("/generate", async (req, res) => {
       { inputs: prompt },
       {
         headers: {
-          Authorization: `Bearer ${process.env.HF_TOKEN}`
+          Authorization: `Bearer ${process.env.HF_TOKEN}`,
+          "Content-Type": "application/json"
         },
-        responseType: "arraybuffer"
+        responseType: "arraybuffer",
+        validateStatus: () => true   // 👈 IMPORTANT
       }
     );
 
+    // 👇 check if response is JSON error
+    const contentType = response.headers["content-type"];
+
+    if (contentType && contentType.includes("application/json")) {
+      const errorJson = JSON.parse(response.data.toString());
+      console.log("HF ERROR:", errorJson);
+
+      return res.status(500).json({
+        error: "HuggingFace Error",
+        details: errorJson
+      });
+    }
+
+    // 👇 success image
     const base64 = Buffer.from(response.data).toString("base64");
 
     res.json({
@@ -32,17 +36,11 @@ app.post("/generate", async (req, res) => {
     });
 
   } catch (error) {
-    console.log("ERROR:", error.response?.data || error.message);
+    console.log("SERVER ERROR:", error.message);
 
     res.status(500).json({
-      error: "Generation failed",
+      error: "Server crashed",
       details: error.message
     });
   }
-});
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
 });
