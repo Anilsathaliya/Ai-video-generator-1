@@ -3,7 +3,7 @@ app.post("/generate", async (req, res) => {
     const prompt = req.body.prompt;
 
     const response = await axios.post(
-      "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
+      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
       { inputs: prompt },
       {
         headers: {
@@ -13,7 +13,7 @@ app.post("/generate", async (req, res) => {
       }
     );
 
-    const base64 = Buffer.from(response.data).toString("base64");
+    const base64 = Buffer.from(response.data, "binary").toString("base64");
 
     res.json({
       image: `data:image/png;base64,${base64}`
